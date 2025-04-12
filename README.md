@@ -1,92 +1,103 @@
-<img src="https://user-images.githubusercontent.com/18099289/62728809-f98b0900-ba1c-11e9-8dd8-67111263a21f.png" width=650px>
+# 🔗 LinkFinder
 
-## About LinkFinder
+**LinkFinder** is a powerful tool for discovering endpoints and hidden URLs within JavaScript files — a critical step in reconnaissance and web application security testing.
 
-LinkFinder is a python script written to discover endpoints and their parameters in JavaScript files. This way penetration testers and bug hunters are able to gather new, hidden endpoints on the websites they are testing. Resulting in new testing ground, possibility containing new vulnerabilities. It does so by using [jsbeautifier](https://github.com/beautify-web/js-beautify) for python in combination with a fairly large regular expression. The regular expressions consists of four small regular expressions. These are responsible for finding:
+## 🚀 Installation
 
-- Full URLs (`https://example.com/*`)
-- Absolute URLs or dotted URLs (`/\*` or `../*`)
-- Relative URLs with at least one slash (`text/test.php`)
-- Relative URLs without a slash (`test.php`)
-
-The output is given in HTML or plaintext. [@karel_origin](https://twitter.com/karel_origin) has written a Chrome extension for LinkFinder which can be found [here](https://github.com/GerbenJavado/LinkFinder/tree/chrome_extension).
-
-## Screenshots
-
-![LinkFinder](https://i.imgur.com/JfcpYok.png "LinkFinder in action")
-
-## Installation
-
-LinkFinder supports **Python 3**.
-
-```
-$ git clone https://github.com/GerbenJavado/LinkFinder.git
-$ cd LinkFinder
-$ python setup.py install
+If not already installed:
+```bash
+git clone https://github.com/GerbenJavado/LinkFinder.git
+cd LinkFinder
+pip install -r requirements.txt
 ```
 
-## Dependencies
+---
 
-LinkFinder depends on the `argparse` and `jsbeautifier` Python modules. These dependencies can all be installed using [pip](https://pypi.python.org/pypi/pip).
+## 📘 Basic Command Structure
 
+```bash
+linkfinder -i <input> -o <output_format>
 ```
-$ pip3 install -r requirements.txt
+
+- `<input>`: Target JavaScript file, directory, or URL.
+- `<output_format>`: `cli` for terminal output or `html` for file output.
+
+---
+
+## 🔍 Usage Examples
+
+### 1. Analyze a Single JavaScript File
+```bash
+linkfinder -i /path/to/your/file.js -o cli
 ```
 
-## Usage
+### 2. Save Results to an HTML File
+```bash
+linkfinder -i /path/to/your/file.js -o html -o output.html
+```
 
-Short Form    | Long Form     | Description
-------------- | ------------- |-------------
--i            | --input       | Input a: URL, file or folder. For folders a wildcard can be used (e.g. '/*.js').
--o            | --output      | "cli" to print to STDOUT, otherwise where to save the HTML file Default: output.html
--r            | --regex       | RegEx for filtering purposes against found endpoints (e.g. ^/api/)
--d            | --domain      | Toggle to use when analyzing an entire domain. Enumerates over all found JS files.
--b            | --burp        | Toggle to use when inputting a Burp 'Save selected' file containing multiple JS files
--c            | --cookies     | Add cookies to the request
--h            | --help        | show the help message and exit
+### 3. Scan a Directory of JavaScript Files
+```bash
+linkfinder -i /path/to/your/directory -o cli -d
+```
 
-### Examples
+- `-d`: Recursively scan all `.js` files in the directory.
 
-* Most basic usage to find endpoints in an online JavaScript file and output the HTML results to results.html:
+### 4. Use Regular Expressions to Refine Search
+```bash
+linkfinder -i /path/to/file.js -r "regex_pattern" -o cli
+```
 
-`python linkfinder.py -i https://example.com/1.js -o results.html`
+### 5. Scan a Website Directly
+```bash
+linkfinder -i https://example.com -o cli
+```
 
-* CLI/STDOUT output (doesn't use jsbeautifier, which makes it very fast):
+### 6. Save Website Scan Results to HTML
+```bash
+linkfinder -i https://example.com -o html -o results.html
+```
 
-`python linkfinder.py -i https://example.com/1.js -o cli`
+### 7. Scan a Specific Web Page
+```bash
+linkfinder -i https://example.com/page.html -o cli
+```
 
-* Analyzing an entire domain and its JS files:
+### 8. Exclude Specific Files During Directory Scan
+```bash
+linkfinder -i /path/to/directory -o cli -d --exclude somefile.js
+```
 
-`python linkfinder.py -i https://example.com -d`
+### 9. Enable Verbose Output
+```bash
+linkfinder -i /path/to/file.js -o cli -v
+```
 
-* Burp input (select in target the files you want to save, right click, `Save selected items`, feed that file as input):
+### 🔄 10. Use with Burp Suite
 
-`python linkfinder.py -i burpfile -b`
+1. Export JavaScript files from Burp.
+2. Analyze them with:
+   ```bash
+   linkfinder -i /path/to/burp_exported.js -o cli
+   ```
 
-* Enumerating an entire folder for JavaScript files, while looking for endpoints starting with /api/ and finally saving the results to results.html:
+---
 
-`python linkfinder.py -i 'Desktop/*.js' -r ^/api/ -o results.html`
+## 🧪 Example: Find All Links in a JS File
+```bash
+linkfinder -i /var/www/html/app.js -o cli
+```
 
-## Docker
+### 🌐 Example: Output Results in HTML
+```bash
+linkfinder -i /var/www/html/app.js -o html -o results.html
+```
 
-* Build the Docker image:
+---
 
-  ``` docker build -t linkfinder```
+## 💡 Pro Tips
+- Combine with tools like `gau`, `waybackurls`, or `jsfinder` for better enumeration.
+- Always check JS files for juicy endpoints like `/api/`, `/admin/`, tokens, or hidden routes.
 
-* Run with Docker
+---
 
-  ` docker run --rm -v $(pwd):/linkfinder/output linkfinder -i http://example.com/1.js -o /linkfinder/output/output.html`
-
-  Make sure to use the path `/linkfinder/output` in your output path, or the output will be lost when the container exits.
-
-## Unit-test
-
-* Require pytest
-
-`pytest test_parser.py`
-
-## Final remarks
-- This is the first time I publicly release a tool. Contributions are much appreciated!
-- LinkFinder is published under the [MIT License](https://github.com/GerbenJavado/LinkFinder/blob/master/LICENSE).
-- Thanks to [@jackhcable](https://twitter.com/jackhcable) for providing me with feedback.
-- Special thanks [@edoverflow](https://twitter.com/edoverflow) for making this project a lot cleaner and awesome.
